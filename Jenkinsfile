@@ -38,6 +38,7 @@ pipeline {
                 sh '''
                 cd infra/dev
                 terraform apply -auto-approve
+                terraform destroy
                 '''
                 archiveArtifacts artifacts: 'infra/dev/terraform.tfstate', onlyIfSuccessful: true
             }
@@ -52,6 +53,7 @@ pipeline {
                 sh '''
                 cd infra/prod
                 terraform apply -auto-approve
+                terraform destroy
                 '''
                 archiveArtifacts artifacts: 'infra/prod/terraform.tfstate', onlyIfSuccessful: true
             }
