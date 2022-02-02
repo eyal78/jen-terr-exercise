@@ -12,7 +12,7 @@ pipeline {
         stage('Load Artifact - prod') {
             when { anyOf {branch "master"} }
             steps {
-                copyArtifacts filter: 'infra/prod/learn-terraform-modules-use/terraform.tfstate', projectName: '${JOB_NAME}'
+                copyArtifacts filter: 'infra/prod/terraform.tfstate', projectName: '${JOB_NAME}'
             }
         }
 
@@ -21,7 +21,7 @@ pipeline {
             steps {
                 sh '''
                 if [ "$BRANCH_NAME" = "master" ] || [ "$CHANGE_TARGET" = "master" ]; then
-                    cd infra/prod/learn-terraform-modules-use
+                    cd infra/prod
                 else
                     cd infra/dev
                 fi
@@ -38,6 +38,7 @@ pipeline {
                 sh '''
                 cd infra/dev
                 terraform apply -auto-approve
+                terraform destroy
                 '''
                 archiveArtifacts artifacts: 'infra/dev/terraform.tfstate', onlyIfSuccessful: true
             }
@@ -50,12 +51,14 @@ pipeline {
             }
             steps {
                 sh '''
-                cd infra/prod/learn-terraform-modules-use
+                cd infra/prod
                 terraform apply -auto-approve
+                terraform destroy
                 '''
-                archiveArtifacts artifacts: 'infra/prod/learn-terraform-modules-use/terraform.tfstate', onlyIfSuccessful: true
+                archiveArtifacts artifacts: 'infra/prod/terraform.tfstate', onlyIfSuccessful: true
             }
         }
   }
 }
+
 
